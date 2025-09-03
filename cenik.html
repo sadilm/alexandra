@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ceník</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <main>
+        <div class="container">
+            <section class="price-list">
+                <h2>Ceníky</h2>
+                <p>Prohlédněte si naše aktuální ceníky. Klikněte na obrázek pro jeho zvětšení.</p>
+                <div class="price-gallery">
+                    <div class="price-item">
+                        <div class="price-title"><strong>Silvest 28.12..-.4.1.</strong></div>
+                        <img src="img/cenik/Alexandra_silvestr_small.jpg" alt="Ceník 1" onclick="openModal('img/cenik/Alexandra_silvestr.jpg')">
+                    </div>
+                    <div class="price-item">
+                        <div class="price-title"><strong>Zima 1.1. - 31.3.</strong></div>
+                        <img src="img/cenik/Alexandra_zima_small.jpg" alt="Ceník 2" onclick="openModal('img/cenik/Alexandra_zima.jpg')">
+                    </div>
+                    <div class="price-item">
+                        <div class="price-title"><strong>Léto 1.1.- 20.12</strong></div>
+                        <img src="img/cenik/Alexandra_leto_small.png" alt="Ceník 3" onclick="openModal('img/cenik/Alexandra_leto.jpg')">
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <!-- Modální okno pro zobrazení velkého obrázku -->
+    <div id="imageModal" class="modal" onclick="closeModal(event)">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="modalImage" src="" alt="Zvětšený obrázek">
+    </div>
+
+    <script src="js/components.js"></script>
+    <script src="js/modal.js"></script>
+</body>
+</html>

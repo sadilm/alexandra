@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    --primary-color: #50e3c2; /* Světle zelená */
+    --secondary-color: #4a90e2; /* Střední modrá */
+    --text-color: #fff; /* Bílý text pro tmavé pozadí */
+    --light-text-color: #e0eafc; /* Světlejší text */
+    --bg-color-start: #2e3b5e;
+    --bg-color-end: #1f273b;
+    --card-bg-color: #ffffff;
+    --border-color: #e0e6ed;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    /* Fotka chaty v lese, která bude na pozadí celé stránky */
+    background-image: url('https://images.unsplash.com/photo-1517824806704-9040b7373f75?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Překrytí s efektem rozostření */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Mírné ztmavení pro lepší čitelnost */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* Pro Safari */
+    z-index: -1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+/* Navigace */
+header {
+    background-color: rgba(31, 39, 59, 0.8); /* Mírně průhledné pozadí */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 0;
+    box-shadow: var(--shadow);
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--light-text-color);
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+nav a:hover {
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+nav a.active {
+    background-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(80, 227, 194, 0.4);
+}
+
+/* Hlavní obsah */
+main {
+    padding: 3rem 0;
+}
+
+section {
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+section:hover {
+    transform: translateY(-5px);
+}
+
+h2 {
+    color: var(--secondary-color);
+    margin-top: 0;
+    font-weight: 600;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.75rem;
+}
+
+/* Galerie */
+.gallery-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    margin: 30px auto;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.gallery {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.gallery-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: fill;
+    border-radius: 12px;
+}
+
+.gallery-nav button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.gallery-nav button:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.gallery-prev {
+    left: 20px;
+}
+
+.gallery-next {
+    right: 20px;
+}
+
+/* Ceník galerie */
+.price-gallery {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.price-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.price-item {
+    flex: 1 1 0;
+    text-align: center;
+}
+
+.price-title {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.price-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.price-list {
+    display: block;
+}
+
+/* Modální okno */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 90%;
+    object-fit: contain;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #bbb;
+    text-decoration: none;
+}
+
+/* Kalendář */
+.calendar {
+    margin-bottom: 2rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.calendar h3 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.calendar button {
+    background-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calendar button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.calendar table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar th, .calendar td {
+    text-align: center;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    position: relative; /* Nutné pro pseudo-elementy */
+}
+
+.calendar thead th {
+    background-color: var(--secondary-color);
+    color: #fff;
+    font-weight: 600;
+}
+
+.calendar td {
+    background-color: #f7f9fb;
+    transition: background-color 0.3s ease;
+}
+
+.calendar td:hover {
+    background-color: #e3eaf2;
+}
+
+/* Dny uprostřed rezervace */
+.calendar td.reserved:not(.start-of-reservation):not(.end-of-reservation) {
+    background-color: #ffcccc;
+}
+
+/* Styl pro počáteční den rezervace - PŘEPISUJE PŘEDCHOZÍ STYLY pro tento den, aby se zobrazil lineární přechod */
+.calendar td.reserved.start-of-reservation:not(.end-of-reservation) {
+    background: linear-gradient(to right, #f7f9fb 50%, #ffcccc 50%) !important;
+}
+
+/* Styl pro koncový den rezervace - PŘEPISUJE PŘEDCHOZÍ STYLY pro tento den, aby se zobrazil lineární přechod */
+.calendar td.reserved.end-of-reservation:not(.start-of-reservation) {
+    background: linear-gradient(to left, #f7f9fb 50%, #ffcccc 50%) !important;
+}
+
+/* Jednodenní rezervace - plná barva */
+.calendar td.reserved.start-of-reservation.end-of-reservation {
+    background-color: #ffcccc;
+}
+
+/* Kontaktní údaje */
+.contact-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-info li {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.contact-info li strong {
+    font-weight: 600;
+}
+
+/* Zápatí */
+footer {
+    background-color: rgba(31, 39, 59, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-align: center;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--light-text-color);
+    margin-top: 3rem;
+}
+
+/* Responzivní design */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    nav li {
+        margin: 0;
+    }
+
+    nav a {
+        display: block;
+        text-align: center;
+    }
+
+    .price-gallery img {
+        width: 100%;
+    }
+}
