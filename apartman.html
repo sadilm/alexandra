@@ -1,53 +1,78 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pronájem apartmánu</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/kalendare_style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apartmán Alexandra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" />
 </head>
-<body>
+<body class="apartman-page">
+  <nav class="main-nav" id="menu"></nav>
 
-    <div id="header-placeholder"></div>
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1>Apartmán Alexandra</h1>
+      <p>
+        Apartmán se nachází v přízemí rodinného domu, má samostatný vchod a nabízí dvě ložnice, kuchyň, koupelnu a obývací pokoj s rozkládací pohovkou. K dispozici je terasa, zahrada s grilem a parkování přímo u objektu.
+      </p>
+    </div>
+  </header>
 
-    <main>
-        <div class="container">
-            <section class="apartman-info">
-                <h2>Apartmán</h2>
-                <p>
-                    Luxusní apartmán se nachází v chatě a má samostatný vchod. Obývací pokoj je společný s vybaveným kuchyňským koutem,
-                     jídelním stolem pro 7 lidí, televizí a pohodlnou rozkládací sedací soupravou. Vybavení pokoje vlevo je televize, 
-                     dvě samostatné lůžka a možnost dvou přistýlek . V pokoji vpravo je k dispozici televize, manželská postel a možnost 1 přistýlky. Apartmán je vybaven koupelnou s WC, samostatným WC, pračkou se sušičkou, vysoušečem bot, myčkou nádobí a kávovarem Dolce Gusto. K dipozici je dětská jídelní stolička.
-                </p>
-                <p>
-                    <b>Na Chatě Alexandra není možné ubytování s domácími zvířaty, děkujeme za pochopení.</b>
-                </p>
-                <div class="gallery-container">
-                    <div class="gallery">
-                        <img src="img/apartman/1.pokoj.1.jpg" alt="" class="gallery-image">
-                        <img src="img/apartman/2.pokoj.1.jpg" alt="" class="gallery-image">
-                        <img src="img/apartman/Koupelna1.jpg" alt="" class="gallery-image">
-                        <img src="img/apartman/Spolmistnost1.jpg" alt="" class="gallery-image">
-                        <img src="img/apartman/Spolmistnost2.jpg" alt="" class="gallery-image">
-                        <img src="img/apartman/Spolmistnost3.jpg" alt="" class="gallery-image">
-                    </div>
-                    <div class="gallery-nav">
-                        <button class="gallery-prev">❮</button>
-                        <button class="gallery-next">❯</button>
-                    </div>
-                </div>
+  <section class="features">
+    <div class="feature">
+      <h3>Vybavení apartmánu</h3>
+      <p>Myčka nádobí, pračka, sušička, dětská stolička, kávovar Dolce Gusto.</p>
+    </div>
+    <div class="feature">
+      <h3>Pro rodiny s dětmi</h3>
+      <p>Dětská postýlka, hračky, bezpečné prostředí, oplocená zahrada.</p>
+    </div>
+    <div class="feature">
+      <h3>Další informace</h3>
+      <p>Wi-Fi zdarma, ubytování bez domácích zvířat, možnost grilování.</p>
+    </div>
+  </section>
 
-                <div id="calendar-apartman-placeholder"></div>
-                
-            </section>
-        </div>
-    </main>
+  <section class="splide" aria-label="Fotogalerie apartmánu">
+    <div class="splide__track">
+      <ul class="splide__list">
+        <li class="splide__slide"><img src="img/alexandra_pozadi.jpg" alt="Apartmán Alexandra" /></li>
+        <li class="splide__slide"><img src="img/alexandra_pozadi.jpg" alt="Apartmán Alexandra" /></li>
+        <li class="splide__slide"><img src="img/alexandra_pozadi.jpg" alt="Apartmán Alexandra" /></li>
+      </ul>
+    </div>
+  </section>
 
-    <div id="footer-placeholder"></div>
+  <footer id="footer"></footer>
 
-    <script src="js/components.js"></script>
-    <script src="js/gallery.js"></script>
-    <script src="js/kalendare.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      new Splide('.splide', {
+        type: 'loop',
+        autoplay: true,
+        interval: 4000,
+        pauseOnHover: true,
+      }).mount();
+      
+      fetch('menu.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('menu').innerHTML = html;
+        })
+        .catch(err => console.error('Menu se nepodařilo načíst:', err));
+
+        fetch('footer.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('footer').innerHTML = html;
+        })
+        .catch(err => console.error('Footer se nepodařilo načíst:', err));
+    });
+  </script>
 </body>
 </html>

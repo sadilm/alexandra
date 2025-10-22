@@ -1,50 +1,78 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pronájem chaty</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/kalendare_style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chata Alexandra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" />
 </head>
-<body>
+<body class="chata-page">
+  <nav class="main-nav" id="menu"></nav>
 
-    <div id="header-placeholder"></div>
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1>Chata Alexandra</h1>
+      <p>
+        Nabízíme ubytování v pěti pokojích, každý s vlastním sociálním zařízením a televizí. K dispozici je společná kuchyň, společenská místnost a vytápěná lyžárna s vysoušečem bot. Ručníky jsou součástí ubytování.
+      </p>
+    </div>
+  </header>
 
-    <main>
-        <div class="container">
-            <section class="chata-info">
-                <h2>Chata u lesa</h2>
-                <p>
-                    Chata Alexandra nabízí ubytování v pěti pokojích, které jsou vybaveny každý svým vlastním sociálním zařízením a vlastní televizí. K dispozici je společná kuchyň, společenská místnost a vytápěná lyžárna s vysoušečem bot přímo v objektu. Ručníky jsou součástí ubytování. Další vybavení: myčka nádobí, pračka, sušička, dětská stolička, kávovar Dolce Gusto.
-                </p>
-                <p>
-                    <b>Na Chatě Alexandra není možné ubytování s domácími zvířaty, děkujeme za pochopení.</b>
-                </p>
-                <div class="gallery-container">
-                    <div class="gallery">
-                        <img src="img/chata/1.pokoj1.jpg" alt="Obrázek chaty 1" class="gallery-image">
-                        <img src="img/chata/1.pokoj3.jpg" alt="Obrázek chaty 2" class="gallery-image">
-                        <img src="img/chata/3.pokoj1.jpg" alt="Obrázek chaty 3" class="gallery-image">
-                        <img src="img/chata/4.pokoj2.jpg" alt="" class="gallery-image">
-                        <img src="img/chata/4.pokoj4.jpg" alt="" class="gallery-image">
-                        <img src="img/chata/4.pokoj5.jpg" alt="" class="gallery-image">
-                        <img src="img/chata/5.pokoj2.jpg" alt="" class="gallery-image">
-                    </div>
-                    <div class="gallery-nav">
-                        <button class="gallery-prev">❮</button>
-                        <button class="gallery-next">❯</button>
-                    </div>
-                </div>
-                <div id="calendar-chata-placeholder"></div>
-            </section>
-        </div>
-    </main>
+  <section class="features">
+    <div class="feature">
+      <h3>Vybavení chaty</h3>
+      <p>Myčka nádobí, pračka, sušička, dětská stolička, kávovar Dolce Gusto.</p>
+    </div>
+    <div class="feature">
+      <h3>Společné prostory</h3>
+      <p>Společenská místnost, kuchyň, lyžárna s vysoušečem bot.</p>
+    </div>
+    <div class="feature">
+      <h3>Další informace</h3>
+      <p>Ubytování bez domácích zvířat. Wi-Fi zdarma v celém objektu.</p>
+    </div>
+  </section>
 
-    <div id="footer-placeholder"></div>
+  <section class="splide" aria-label="Fotogalerie chaty">
+    <div class="splide__track">
+      <ul class="splide__list">
+        <li class="splide__slide"><img src="img/alexandra_pozadi.jpg" alt="Chata Alexandra" /></li>
+        <li class="splide__slide"><img src="img/alexandra_pozadi.jpg" alt="Chata Alexandra" /></li>
+        <li class="splide__slide"><img src="img/alexandra_pozadi.jpg" alt="Chata Alexandra" /></li>
+      </ul>
+    </div>
+  </section>
 
-    <script src="js/components.js"></script>
-    <script src="js/gallery.js"></script>
-    <script src="js/kalendare.js"></script>
+  <footer id="footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      new Splide('.splide', {
+        type: 'loop',
+        autoplay: true,
+        interval: 4000,
+        pauseOnHover: true,
+      }).mount();
+
+      fetch('menu.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('menu').innerHTML = html;
+        })
+        .catch(err => console.error('Menu se nepodařilo načíst:', err));
+
+        fetch('footer.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('footer').innerHTML = html;
+        })
+        .catch(err => console.error('Footer se nepodařilo načíst:', err));
+    });
+  </script>
 </body>
 </html>

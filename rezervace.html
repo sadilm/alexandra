@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rezervace | Chata Alexandra</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="rezervace-page">
+  <nav class="main-nav" id="menu"></nav>
+
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1>Rezervace</h1>
+      <p>Vyberte si termín pobytu kliknutím na první a poslední volný den. Obsazené dny nelze vybrat.</p>
+    </div>
+  </header>
+
+  <section class="calendar-section">
+    <h2>Obsazenost chaty</h2>
+    <p class="calendar-instruction">Klikněte na první volný den pro začátek rezervace, poté na poslední den. Obsazené dny nelze vybrat.</p>
+    <div class="calendar-controls">
+      <button onclick="changeOffset('chata', -1)">◀</button>
+      <button onclick="changeOffset('chata', 1)">▶</button>
+    </div>
+    <div id="calendar-chata" class="calendar-container"></div>
+
+    <h2>Obsazenost apartmánu</h2>
+    <p class="calendar-instruction">Klikněte na první volný den pro začátek rezervace, poté na poslední den. Obsazené dny nelze vybrat.</p>
+    <div class="calendar-controls">
+      <button onclick="changeOffset('apartman', -1)">◀</button>
+      <button onclick="changeOffset('apartman', 1)">▶</button>
+    </div>
+    <div id="calendar-apartman" class="calendar-container"></div>
+
+    <div class="calendar-legend">
+      <h3>Legenda</h3>
+      <ul>
+        <li><span class="legend-box available"></span> Volný den</li>
+        <li><span class="legend-box occupied"></span> Obsazeno</li>
+        <li><span class="legend-box start"></span> Začátek výběru</li>
+        <li><span class="legend-box selected"></span> Vybraný rozsah</li>
+      </ul>
+    </div>
+  </section>
+
+  <div id="reservation-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3>Rezervace</h3>
+      <p id="selected-range"></p>
+      <a id="mailto-link" href="#" target="_blank">
+        <button>Odeslat rezervaci e-mailem</button>
+      </a>
+    </div>
+  </div>
+
+  <footer id="footer"></footer>
+
+  <script src="js/rezervace.js"></script>
+</body>
+</html>
