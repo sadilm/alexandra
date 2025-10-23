@@ -90,6 +90,59 @@ body {
   color: var(--color-light-hover);
 }
 
+/* Hamburger / mobile menu styles */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  margin-left: 1rem;
+  cursor: pointer;
+}
+
+.hamburger,
+.hamburger::before,
+.hamburger::after {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--color-white);
+  border-radius: 2px;
+  position: relative;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.hamburger::before { top: -7px; }
+.hamburger::after { top: 7px; }
+
+/* Mobile layout: hide links, show toggle */
+@media (max-width: 768px) {
+  .nav-toggle { display: block; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.6);
+    padding: 1rem 0;
+    flex-direction: column;
+    gap: 0;
+    text-align: center;
+  }
+  .nav-links.show {
+    display: flex;
+  }
+  .nav-links li { margin: 0.4rem 0; }
+  .nav-links a { font-size: 1.1rem; }
+}
+
 
 .index-page .hero-section {
   background-image: url('../img/alexandra_pozadi.jpg');
