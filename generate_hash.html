@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generátor hash hesla | Alexandra</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      padding: 2rem;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .gen-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      margin-top: 1rem;
+    }
+    .gen-card h1 { margin-top: 0; }
+    .gen-card input {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      margin-top: 0.25rem;
+    }
+    .gen-result {
+      background: #f5f5f5;
+      padding: 0.75rem;
+      border-radius: 6px;
+      word-break: break-all;
+      font-family: monospace;
+      margin-top: 0.75rem;
+      min-height: 1.4rem;
+    }
+    .gen-actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
+    .gen-info {
+      background: #fff8e1;
+      border-left: 4px solid #ffc107;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+      font-size: 0.92rem;
+    }
+    .gen-info code {
+      background: #eee;
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="gen-card">
+    <h1>Generátor hash hesla</h1>
+    <p>Tento nástroj vygeneruje SHA-256 hash pro heslo. Hash vložíte do souboru <code>auth.json</code> jako hodnotu pole <code>passwordHash</code>. Heslo samotné nikam neukládáte, takže ho nelze z webu získat zpět.</p>
+
+    <label>
+      <strong>Zadejte nové heslo:</strong>
+      <input type="password" id="pwd" autocomplete="new-password" placeholder="Zadejte silné heslo" />
+    </label>
+    <label style="display:block;margin-top:0.5rem">
+      <strong>Potvrzení hesla:</strong>
+      <input type="password" id="pwd2" autocomplete="new-password" placeholder="Zopakujte heslo" />
+    </label>
+
+    <div class="gen-actions">
+      <button class="btn btn-primary" id="generate">Vygenerovat hash</button>
+      <button class="btn btn-secondary" id="copy">Zkopírovat do schránky</button>
+    </div>
+
+    <p style="margin-top:1rem"><strong>Hash:</strong></p>
+    <div class="gen-result" id="result">—</div>
+
+    <div class="gen-info">
+      <strong>Co dál?</strong>
+      <ol style="margin:0.5rem 0 0 1.2rem;padding:0">
+        <li>Zkopírujte vygenerovaný hash.</li>
+        <li>Otevřete soubor <code>auth.json</code> v editoru.</li>
+        <li>Nahraďte hodnotu <code>passwordHash</code> tímto hashem.</li>
+        <li>Soubor nahrajte na server.</li>
+        <li>Zavřete tuto stránku - po nastavení už ji nepotřebujete (můžete ji ze serveru odebrat).</li>
+      </ol>
+    </div>
+
+    <p style="margin-top:1rem"><a href="rezervace.html">← Zpět na rezervace</a></p>
+  </div>
+
+  <script>
+    async function sha256(text) {
+      const buf = new TextEncoder().encode(text);
+      const hash = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    const resultEl = document.getElementById('result');
+
+    document.getElementById('generate').addEventListener('click', async () => {
+      const p1 = document.getElementById('pwd').value;
+      const p2 = document.getElementById('pwd2').value;
+      if (!p1) { resultEl.textContent = 'Zadejte heslo.'; return; }
+      if (p1.length < 6) { resultEl.textContent = 'Heslo musí mít alespoň 6 znaků.'; return; }
+      if (p1 !== p2) { resultEl.textContent = 'Hesla se neshodují.'; return; }
+      const h = await sha256(p1);
+      resultEl.textContent = h;
+    });
+
+    document.getElementById('copy').addEventListener('click', async () => {
+      const txt = resultEl.textContent.trim();
+      if (!txt || txt === '—' || txt.includes(' ')) { return; }
+      try {
+        await navigator.clipboard.writeText(txt);
+        resultEl.textContent = txt + '   ✓ zkopírováno';
+      } catch {
+        alert('Kopírování selhalo. Označte text ručně.');
+      }
+    });
+  </script>
+</body>
+</html>

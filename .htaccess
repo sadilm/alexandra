@@ -1,0 +1,12 @@
+# Zablokovat primy pristup k auth.json (hash hesla nesmi byt verejne stazitelny)
+<Files "auth.json">
+    Require all denied
+</Files>
+
+# Pro starsi Apache 2.2
+<IfModule !mod_authz_core.c>
+    <Files "auth.json">
+        Order allow,deny
+        Deny from all
+    </Files>
+</IfModule>

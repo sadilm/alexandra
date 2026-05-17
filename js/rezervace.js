@@ -154,6 +154,25 @@ function changeOffset(type, delta) {
   loadCalendar(type);
 }
 
+const LS_KEY_PREFIX = 'alexandra_local_';
+function lsKey(type) { return LS_KEY_PREFIX + type; }
+
+function getLocalReservations(type) {
+  try {
+    const raw = localStorage.getItem(lsKey(type));
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function setLocalReservations(type, list) {
+  localStorage.setItem(lsKey(type), JSON.stringify(list));
+  updateDirtyIndicator(type);
+}
+function clearLocalReservations(type) {
+  localStorage.removeItem(lsKey(type));
+  updateDirtyIndicator(type);
+}
 function loadCalendar(type) {
   const containerId = type === 'chata' ? 'calendar-chata' : 'calendar-apartman';
   const jsonUrl = type === 'chata' ? 'obsazenost_chata.json' : 'obsazenost_apartman.json';
@@ -167,9 +186,10 @@ function loadCalendar(type) {
   const offset = Number.isFinite(calendarState[type]) ? calendarState[type] : 0;
   console.log(`[calendar] loadCalendar ${type} offset=${offset}`);
 
-  fetch(jsonUrl)
+  fetch(jsonUrl, { cache: 'no-store' })
     .then(res => res.json())
-    .then(data => {
+    .then(raw => {
+      const data = mergeWithLocal(raw, type);
       const { occupiedIso, reservationFull, reservationHalf } = buildReservationSets(data, type);
 
       // blocked = fully occupied days (from obsazenost ranges and full reservation days)
@@ -306,6 +326,286 @@ function closeModal() {
   loadCalendar('apartman');
 }
 
+// === Admin: přidávání / mazání / stahování rezervací ===
+
+function toast(msg, kind = '') {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.className = 'toast' + (kind ? ' ' + kind : '');
+  el.textContent = msg;
+  requestAnimationFrame(() => el.classList.add('show'));
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+async function fetchJSON(type) {
+  const url = type === 'chata' ? 'obsazenost_chata.json' : 'obsazenost_apartman.json';
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Nepodařilo se načíst ' + url);
+  return res.json();
+}
+
+async function getCombined(type) {
+  const data = await fetchJSON(type);
+  const list = Array.isArray(data.obsazenost) ? data.obsazenost.slice() : [];
+  const local = getLocalReservations(type);
+  return { server: data, list, local };
+}
+
+function rangesOverlap(aStart, aEnd, bStart, bEnd) {
+  // ISO yyyy-mm-dd string porovnání funguje lexikograficky
+  return !(aEnd < bStart || bEnd < aStart);
+}
+
+async function addReservation(type, isoOd, isoDo) {
+  if (!isoOd || !isoDo) { toast('Vyplňte oba termíny.', 'error'); return; }
+  if (isoOd > isoDo) { toast('Datum "od" musí být dříve než "do".', 'error'); return; }
+
+  const { list } = await getCombined(type);
+  // Kontrola kolize s existující obsazeností (server + lokální)
+  const all = [...list];
+  for (const r of all) {
+    const rOd = toISOFlexible(r.od);
+    const rDo = toISOFlexible(r.do);
+    if (rOd && rDo && rangesOverlap(isoOd, isoDo, rOd, rDo)) {
+      toast(`Kolize s rezervací ${isoToEuro(rOd)} – ${isoToEuro(rDo)}.`, 'error');
+      return;
+    }
+  }
+
+  const local = getLocalReservations(type);
+  local.push({ od: isoToEuro(isoOd), do: isoToEuro(isoDo) });
+  setLocalReservations(type, local);
+  toast('Rezervace přidána. Nezapomeňte stáhnout JSON.', 'success');
+  refreshAdminLists();
+  loadCalendar(type);
+}
+
+async function deleteReservation(type, source, index) {
+  if (!confirm('Opravdu smazat tuto rezervaci?')) return;
+
+  if (source === 'local') {
+    const local = getLocalReservations(type);
+    local.splice(index, 1);
+    setLocalReservations(type, local);
+    toast('Lokální rezervace smazána.', 'success');
+  } else {
+    // smazání ze serveru = označit pro vyřazení; uložíme do localStorage seznam "removed"
+    const data = await fetchJSON(type);
+    const item = (data.obsazenost || [])[index];
+    if (!item) { toast('Rezervace nenalezena.', 'error'); return; }
+    const removedKey = LS_KEY_PREFIX + type + '_removed';
+    const removed = JSON.parse(localStorage.getItem(removedKey) || '[]');
+    removed.push({ od: item.od, do: item.do });
+    localStorage.setItem(removedKey, JSON.stringify(removed));
+    toast('Označeno ke smazání. Stáhněte aktualizovaný JSON.', 'success');
+    updateDirtyIndicator(type);
+  }
+  refreshAdminLists();
+  loadCalendar(type);
+}
+
+function getRemovedReservations(type) {
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY_PREFIX + type + '_removed') || '[]');
+  } catch { return []; }
+}
+function clearRemovedReservations(type) {
+  localStorage.removeItem(LS_KEY_PREFIX + type + '_removed');
+}
+
+// Override mergeWithLocal aby zohlednil i smazání
+function mergeWithLocal(data, type) {
+  const local = getLocalReservations(type);
+  const removed = getRemovedReservations(type);
+  const isRemoved = (r) => removed.some(x => x.od === r.od && x.do === r.do);
+  const filteredServer = (data.obsazenost || []).filter(r => !isRemoved(r));
+  return { ...data, obsazenost: [...filteredServer, ...local] };
+}
+
+// Override updateDirtyIndicator aby brala i removed
+function updateDirtyIndicator(type) {
+  const el = document.querySelector(`[data-dirty="${type}"]`);
+  if (!el) return;
+  const has = getLocalReservations(type).length > 0 || getRemovedReservations(type).length > 0;
+  el.style.display = has ? '' : 'none';
+}
+
+async function refreshAdminLists() {
+  for (const type of ['chata', 'apartman']) {
+    const ul = document.getElementById('admin-list-' + type);
+    if (!ul) continue;
+    ul.innerHTML = '';
+
+    try {
+      const data = await fetchJSON(type);
+      const server = Array.isArray(data.obsazenost) ? data.obsazenost : [];
+      const local = getLocalReservations(type);
+      const removed = getRemovedReservations(type);
+      const isRemoved = (r) => removed.some(x => x.od === r.od && x.do === r.do);
+
+      server.forEach((r, idx) => {
+        const li = document.createElement('li');
+        if (isRemoved(r)) {
+          li.style.opacity = '0.5';
+          li.style.textDecoration = 'line-through';
+        }
+        li.innerHTML = `
+          <span class="res-range">${r.od} – ${r.do}</span>
+          <span class="res-source">${isRemoved(r) ? 'ke smazání' : 'uloženo'}</span>
+        `;
+        const btn = document.createElement('button');
+        btn.className = 'btn-danger-small';
+        btn.textContent = isRemoved(r) ? 'Obnovit' : 'Smazat';
+        btn.onclick = () => {
+          if (isRemoved(r)) {
+            const rem = getRemovedReservations(type).filter(x => !(x.od === r.od && x.do === r.do));
+            localStorage.setItem(LS_KEY_PREFIX + type + '_removed', JSON.stringify(rem));
+            updateDirtyIndicator(type);
+            refreshAdminLists();
+            loadCalendar(type);
+          } else {
+            deleteReservation(type, 'server', idx);
+          }
+        };
+        li.appendChild(btn);
+        ul.appendChild(li);
+      });
+
+      local.forEach((r, idx) => {
+        const li = document.createElement('li');
+        li.className = 'is-local';
+        li.innerHTML = `
+          <span class="res-range">${r.od} – ${r.do}</span>
+          <span class="res-source">nová (neuloženo)</span>
+        `;
+        const btn = document.createElement('button');
+        btn.className = 'btn-danger-small';
+        btn.textContent = 'Smazat';
+        btn.onclick = () => deleteReservation(type, 'local', idx);
+        li.appendChild(btn);
+        ul.appendChild(li);
+      });
+
+      updateDirtyIndicator(type);
+    } catch (err) {
+      console.error('[admin] refresh', type, err);
+    }
+  }
+}
+
+async function downloadJson(type) {
+  const data = await fetchJSON(type);
+  const merged = mergeWithLocal(data, type);
+  const cleaned = { obsazenost: merged.obsazenost };
+  if (data.rezervace) cleaned.rezervace = data.rezervace;
+  const json = JSON.stringify(cleaned, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = type === 'chata' ? 'obsazenost_chata.json' : 'obsazenost_apartman.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('JSON stažen. Nahrajte jej na server a poté klikněte na "Zahodit změny".');
+}
+
+function resetLocal(type) {
+  if (!confirm('Opravdu zahodit všechny neuložené změny pro ' + type + '?')) return;
+  clearLocalReservations(type);
+  clearRemovedReservations(type);
+  refreshAdminLists();
+  loadCalendar(type);
+  toast('Změny zahozeny.');
+}
+
+async function saveToServer(type) {
+  const password = (typeof getStoredPassword === 'function') ? getStoredPassword() : null;
+  if (!password) {
+    toast('Přihlášení vypršelo. Přihlaste se znovu.', 'error');
+    if (typeof showLoginModal === 'function') showLoginModal();
+    return;
+  }
+
+  // Sestavit aktuální stav (server + local - removed)
+  let payload;
+  try {
+    const data = await fetchJSON(type);
+    const merged = mergeWithLocal(data, type);
+    payload = (merged.obsazenost || []).map(r => ({
+      od: r.od.includes('-') ? isoToEuro(r.od) : r.od,
+      do: r.do.includes('-') ? isoToEuro(r.do) : r.do
+    }));
+  } catch (e) {
+    toast('Nepodařilo se načíst aktuální data.', 'error');
+    return;
+  }
+
+  if (!confirm(`Uložit ${payload.length} rezervací pro ${type} na server? Soubor bude přepsán.`)) return;
+
+  try {
+    const res = await fetch('save_obsazenost.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, unit: type, obsazenost: payload })
+    });
+    const result = await res.json().catch(() => ({}));
+    if (res.ok && result.ok) {
+      // úspěch - vyčistit lokální stav, protože server už ho má
+      clearLocalReservations(type);
+      clearRemovedReservations(type);
+      refreshAdminLists();
+      loadCalendar(type);
+      toast(`Uloženo na server (${result.count} rezervací).`, 'success');
+    } else {
+      toast('Chyba ukládání: ' + (result.error || res.status), 'error');
+    }
+  } catch (e) {
+    console.error('[admin] save', e);
+    toast('Chyba spojení se serverem.', 'error');
+  }
+}
+
+// Globální delegace pro admin akce
+document.addEventListener('submit', (e) => {
+  const form = e.target.closest('.admin-form');
+  if (!form) return;
+  e.preventDefault();
+  const type = form.getAttribute('data-unit');
+  const od = form.querySelector('input[name="od"]').value;
+  const doD = form.querySelector('input[name="do"]').value;
+  addReservation(type, od, doD).then(() => {
+    form.reset();
+  });
+});
+
+document.addEventListener('click', (e) => {
+  const sv = e.target.closest('[data-save]');
+  if (sv) { saveToServer(sv.getAttribute('data-save')); return; }
+  const dl = e.target.closest('[data-download]');
+  if (dl) { downloadJson(dl.getAttribute('data-download')); return; }
+  const rs = e.target.closest('[data-reset]');
+  if (rs) { resetLocal(rs.getAttribute('data-reset')); return; }
+});
+
+// Hooks volané z auth.js po login/logout
+function onLogin() {
+  refreshAdminLists();
+  loadCalendar('chata');
+  loadCalendar('apartman');
+  toast('Přihlášení proběhlo úspěšně.', 'success');
+}
+function onLogout() {
+  toast('Odhlášení proběhlo.');
+}
+
 // reservationHalfMap: Map(iso => {left:boolean,right:boolean}) nebo pole rezervací (zpětná kompatibilita)
 function markReservationsHalfDays(calContainerId, reservationHalfMapOrArray, unit) {
   const container = document.getElementById(calContainerId);
@@ -383,6 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res => res.text())
     .then(html => {
       document.getElementById('menu').innerHTML = html;
+      if (typeof updateAuthUI === 'function') updateAuthUI();
     });
 
   fetch('footer.html')
@@ -393,4 +694,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadCalendar('chata');
   loadCalendar('apartman');
+  refreshAdminLists();
 });

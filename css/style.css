@@ -141,6 +141,12 @@ body {
   }
   .nav-links li { margin: 0.4rem 0; }
   .nav-links a { font-size: 1.1rem; }
+  /* V mobilním rozbalovacím menu necháme auth tlačítko v toku */
+  .nav-auth {
+    position: static;
+    transform: none;
+    margin-top: 0.4rem;
+  }
 }
 
 
@@ -485,38 +491,36 @@ footer {
   background: linear-gradient(to right, var(--color-success-light) 50%, var(--color-danger-light) 50%);
 }
 
-/* modal: centrální dialog nad stránkou */
-#reservation-modal.modal {
+/* modal: centrální dialog nad stránkou - GENERICKÝ */
+.modal {
   display: none; /* JS přepíná na 'flex' */
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.45);
-  z-index: 10000; /* musí být nad vším ostatním */
+  z-index: 10000;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   box-sizing: border-box;
 }
 
-/* samotné okno dialogu */
-#reservation-modal .modal-content {
+.modal .modal-content {
   background: #ffffff;
   color: var(--color-text-dark);
-  padding: 1.2rem;
-  border-radius: 8px;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
-  max-width: 560px;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  max-width: 480px;
   width: 100%;
   position: relative;
   z-index: 10001;
 }
 
-/* close křížek */
-#reservation-modal .close {
+.modal .close {
   position: absolute;
-  top: 8px;
-  right: 10px;
-  font-size: 1.4rem;
+  top: 10px;
+  right: 14px;
+  font-size: 1.6rem;
   line-height: 1;
   cursor: pointer;
   background: transparent;
@@ -525,8 +529,7 @@ footer {
   z-index: 10002;
 }
 
-/* odkaz/tlačítko v modalu */
-#reservation-modal .modal-content button {
+.modal .modal-content button {
   background: var(--color-primary);
   color: var(--color-white);
   border: none;
@@ -534,6 +537,231 @@ footer {
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* === Login modal === */
+.login-modal .modal-content { max-width: 420px; }
+.login-modal h3 { margin: 0 0 0.4rem; }
+.login-help { color: #555; margin: 0 0 1rem; font-size: 0.92rem; }
+.login-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+}
+#login-password {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+#login-password:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(200,180,140,0.25);
+}
+.login-error {
+  color: var(--color-error);
+  min-height: 1.2rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+}
+.login-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.btn {
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+.btn-primary { background: var(--color-primary); color: var(--color-white); }
+.btn-primary:hover { filter: brightness(0.95); }
+.btn-secondary { background: var(--color-light-gray); color: var(--color-text-dark); }
+.btn-secondary:hover { background: #e2e2e2; }
+.btn-ghost { background: transparent; color: var(--color-error); border: 1px solid var(--color-error); }
+.btn-ghost:hover { background: var(--color-danger-light); }
+.btn-danger-small {
+  background: var(--color-danger-light);
+  color: var(--color-error);
+  border: none;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+.btn-danger-small:hover { background: #f5b8be; }
+
+/* === Auth tlačítka v navigaci === */
+.nav-auth {
+  list-style: none;
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+.auth-btn:hover { filter: brightness(0.95); }
+.auth-icon { font-size: 1rem; }
+body.is-authenticated .auth-btn-logout { background: #6c757d; }
+
+/* === Admin sekce === */
+.admin-section {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1.5rem 1.25rem;
+  background: var(--color-white-more-transparent);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px var(--box-shadow-color);
+}
+.admin-section h2 { margin-top: 0; }
+.admin-help {
+  background: var(--color-background-light);
+  border-left: 4px solid var(--color-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  color: #555;
+  font-size: 0.92rem;
+}
+.admin-help code {
+  background: var(--color-light-gray);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.88em;
+}
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+.admin-card {
+  background: var(--color-white);
+  border-radius: 8px;
+  padding: 1.1rem 1.1rem 1.25rem;
+  box-shadow: 0 4px 12px var(--box-shadow-color);
+}
+.admin-card h3 { margin-top: 0; }
+.admin-card h4 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+.admin-dirty {
+  color: #b8860b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-left: 0.4rem;
+}
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: flex-end;
+  background: var(--color-background-light);
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  gap: 0.25rem;
+  flex: 1 1 130px;
+}
+.admin-form input[type="date"] {
+  padding: 0.45rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+.admin-form input[type="date"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+.admin-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--color-light-gray);
+  border-radius: 6px;
+}
+.admin-list:empty::before {
+  content: "Žádné rezervace.";
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #888;
+  font-style: italic;
+}
+.admin-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-light-gray);
+  font-size: 0.92rem;
+}
+.admin-list li:last-child { border-bottom: none; }
+.admin-list li.is-local {
+  background: #fff8e1;
+}
+.admin-list .res-range {
+  flex: 1;
+}
+.admin-list .res-source {
+  font-size: 0.75rem;
+  color: #999;
+  margin-left: 0.5rem;
+}
+.admin-list .is-local .res-source { color: #b8860b; }
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+}
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c2c2c;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  z-index: 10001;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+  font-size: 0.92rem;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.toast.success { background: #2e7d32; }
+.toast.error { background: #b71c1c; }
 
 /* zajistit, že modal není schovaný pod overflow: hidden rodičů */
 html, body { height: 100%; }

@@ -46,6 +46,45 @@
     </div>
   </section>
 
+  <section class="admin-section" data-auth-required style="display:none">
+    <h2>Správa rezervací</h2>
+    <p class="admin-help">Po přidání rezervace stáhněte aktualizovaný JSON soubor a nahrajte ho na server (přepište původní <code>obsazenost_chata.json</code> nebo <code>obsazenost_apartman.json</code>). Neuložené změny zůstávají v prohlížeči.</p>
+
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h3>Přidat rezervaci - Chata</h3>
+        <form class="admin-form" data-unit="chata" onsubmit="return false;">
+          <label>Od <input type="date" name="od" required></label>
+          <label>Do <input type="date" name="do" required></label>
+          <button type="submit" class="btn btn-primary">Přidat</button>
+        </form>
+        <h4>Aktuální obsazenost chaty <span class="admin-dirty" data-dirty="chata" style="display:none">● neuložené změny</span></h4>
+        <ul class="admin-list" id="admin-list-chata"></ul>
+        <div class="admin-actions">
+          <button type="button" class="btn btn-primary" data-save="chata">💾 Uložit na server</button>
+          <button type="button" class="btn btn-secondary" data-download="chata">Stáhnout JSON</button>
+          <button type="button" class="btn btn-ghost" data-reset="chata">Zahodit změny</button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>Přidat rezervaci - Apartmán</h3>
+        <form class="admin-form" data-unit="apartman" onsubmit="return false;">
+          <label>Od <input type="date" name="od" required></label>
+          <label>Do <input type="date" name="do" required></label>
+          <button type="submit" class="btn btn-primary">Přidat</button>
+        </form>
+        <h4>Aktuální obsazenost apartmánu <span class="admin-dirty" data-dirty="apartman" style="display:none">● neuložené změny</span></h4>
+        <ul class="admin-list" id="admin-list-apartman"></ul>
+        <div class="admin-actions">
+          <button type="button" class="btn btn-primary" data-save="apartman">💾 Uložit na server</button>
+          <button type="button" class="btn btn-secondary" data-download="apartman">Stáhnout JSON</button>
+          <button type="button" class="btn btn-ghost" data-reset="apartman">Zahodit změny</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div id="reservation-modal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
@@ -60,6 +99,7 @@
   <footer id="footer"></footer>
 
   <script src="js/menu.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/rezervace.js"></script>
 </body>
 </html>
